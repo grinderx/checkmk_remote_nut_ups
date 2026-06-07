@@ -10,6 +10,10 @@ It supports:
 - Perfdata for graphing (battery, voltages, frequency, load, temperature)
 - Clean API2-compliant implementation
 
+This project is licensed under the GNU General Public License v2.0 or, at your option, any later version.
+
+See the LICENSE file for details.
+
 Note: AI assisted.
 
 ---
