@@ -1,0 +1,31 @@
+#!/bin/bash
+
+
+SCRIPT_DIR="$(dirname "$0")"
+SITE_CFG="${SCRIPT_DIR}/nut_hosts.cfg"
+#SITE_CFG="nut_hosts.cfg"
+
+[ -r "$SITE_CFG" ] || exit 0
+
+while read -r NUT_HOST; do
+    [[ -z "$NUT_HOST" || "$NUT_HOST" =~ ^# ]] && continue
+
+    UPS_LIST=$(upsc -l "${NUT_HOST}" 2>/dev/null)
+    [ -z "$UPS_LIST" ] && continue
+
+    echo "<<<<${NUT_HOST}>>>>"
+    echo "<<<nut>>>"
+
+    for UPS in $UPS_LIST; do
+        VARS=$(upsc "${UPS}@${NUT_HOST}" 2>/dev/null)
+        [ -z "$VARS" ] && continue
+
+        while IFS=":" read -r key value; do
+            key=$(echo "$key" | xargs)
+            value=$(echo "$value" | xargs)
+            [ -z "$key" ] && continue
+            echo "${key} ${value}"
+        done <<< "$VARS"
+    done
+
+done < "$SITE_CFG"
