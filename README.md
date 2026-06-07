@@ -1,6 +1,6 @@
 # Remote NUT UPS monitoring for Checkmk 2.3+ (API2)
 
-This package provides full monitoring of remote NUT (Network UPS Tools) devices via Checkmk 2.5 (tested with this version) using the modern **Agent-Based API v2** and **Rulesets API v2**. So it may actually be comaptible with version 2.3+.
+This package provides full monitoring of remote NUT (Network UPS Tools) devices via Checkmk 2.5 (tested with this version) using the modern **Agent-Based API v2** and **Rulesets API v2**. So it may actually be compatible with version 2.3+.
 
 It supports:
 
