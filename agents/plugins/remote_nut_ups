@@ -1,9 +1,7 @@
 #!/bin/bash
 
-
 SCRIPT_DIR="$(dirname "$0")"
-SITE_CFG="${SCRIPT_DIR}/nut_hosts.cfg"
-#SITE_CFG="nut_hosts.cfg"
+SITE_CFG="${SCRIPT_DIR}/remote_nut_ups_hosts.cfg"
 
 [ -r "$SITE_CFG" ] || exit 0
 
@@ -14,7 +12,7 @@ while read -r NUT_HOST; do
     [ -z "$UPS_LIST" ] && continue
 
     echo "<<<<${NUT_HOST}>>>>"
-    echo "<<<nut>>>"
+    echo "<<<remote_nut_ups>>>"
 
     for UPS in $UPS_LIST; do
         VARS=$(upsc "${UPS}@${NUT_HOST}" 2>/dev/null)
@@ -24,7 +22,9 @@ while read -r NUT_HOST; do
             key=$(echo "$key" | xargs)
             value=$(echo "$value" | xargs)
             [ -z "$key" ] && continue
-            echo "${key} ${value}"
+
+            # Emit per‑UPS namespaced metrics
+            echo "${UPS} ${key} ${value}"
         done <<< "$VARS"
     done
 
