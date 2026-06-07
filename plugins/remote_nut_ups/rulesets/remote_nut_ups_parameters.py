@@ -15,6 +15,10 @@ from cmk.rulesets.v1.rule_specs import (
 
 
 def _pair(title: str, warn: float, crit: float) -> DictElement:
+    """
+    A reusable helper that returns a Dictionary with two Float fields.
+    This version ensures Checkmk returns actual floats, not strings.
+    """
     return DictElement(
         parameter_form=Dictionary(
             title=Title(title),
@@ -40,6 +44,10 @@ def _pair(title: str, warn: float, crit: float) -> DictElement:
 
 
 def _parameter_valuespec_remote_nut_ups() -> Dictionary:
+    """
+    The full parameter dictionary for all UPS thresholds.
+    All values are guaranteed to be floats when passed to the check plugin.
+    """
     return Dictionary(
         title=Title("Remote NUT UPS parameters"),
         help_text=Help("Thresholds for battery, voltage and frequency."),
@@ -66,8 +74,8 @@ def _parameter_valuespec_remote_nut_ups() -> Dictionary:
             ),
             "frequency_levels": _pair(
                 "Input frequency levels",
-                49.0,
-                48.0,
+                45.0,
+                40.0,
             ),
         },
     )

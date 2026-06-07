@@ -13,12 +13,6 @@ from cmk.agent_based.v2 import (
 # -----------------------------
 # PARSER (multi-instance)
 # -----------------------------
-#def parse_nut(string_table):
-#    data = {}
-#    for ups_name, key, value in string_table:
-#        data.setdefault(ups_name, {})[key] = value
-#    return data
-
 def parse_nut(string_table):
     data = {}
     for row in string_table:
@@ -51,7 +45,7 @@ def check_nut(item, params, section):
     if not ups:
         return
 
-    # Extract metrics
+    # Extract metrics from agent data
     bat = float(ups.get("battery.charge", 0))
     load = float(ups.get("ups.load", 0))
     temp = float(ups.get("ups.temperature", 0))
@@ -61,12 +55,21 @@ def check_nut(item, params, section):
     input_freq = float(ups.get("input.frequency", 0))
     status = ups.get("ups.status", "UNKNOWN")
 
-    # Extract WATO parameters (tuples)
-    bat_warn, bat_crit = params["battery_levels"]
-    bvolt_warn, bvolt_crit = params["battery_voltage_levels"]
-    involt_warn, involt_crit = params["input_voltage_levels"]
-    outvolt_warn, outvolt_crit = params["output_voltage_levels"]
-    freq_warn, freq_crit = params["frequency_levels"]
+    # Extract WATO parameters (dicts -> floats)
+    bat_warn = float(params["battery_levels"]["warning"])
+    bat_crit = float(params["battery_levels"]["critical"])
+
+    bvolt_warn = float(params["battery_voltage_levels"]["warning"])
+    bvolt_crit = float(params["battery_voltage_levels"]["critical"])
+
+    involt_warn = float(params["input_voltage_levels"]["warning"])
+    involt_crit = float(params["input_voltage_levels"]["critical"])
+
+    outvolt_warn = float(params["output_voltage_levels"]["warning"])
+    outvolt_crit = float(params["output_voltage_levels"]["critical"])
+
+    freq_warn = float(params["frequency_levels"]["warning"])
+    freq_crit = float(params["frequency_levels"]["critical"])
 
     # State logic
     state = State.OK
@@ -91,6 +94,7 @@ def check_nut(item, params, section):
     elif volt_out < outvolt_warn:
         state = max(state, State.WARN)
 
+    # Frequency: symmetric window around nominal 50 Hz
     if input_freq < freq_crit or input_freq > (50 + (50 - freq_crit)):
         state = max(state, State.CRIT)
     elif input_freq < freq_warn or input_freq > (50 + (50 - freq_warn)):
@@ -128,11 +132,11 @@ check_plugin_nut = CheckPlugin(
     discovery_function=discover_nut,
     check_function=check_nut,
     check_default_parameters={
-        "battery_levels": (20.0, 10.0),
-        "battery_voltage_levels": (11.0, 10.5),
-        "input_voltage_levels": (200.0, 180.0),
-        "output_voltage_levels": (200.0, 180.0),
-        "frequency_levels": (49.0, 48.0),
+        "battery_levels": {"warning": 20.0, "critical": 10.0},
+        "battery_voltage_levels": {"warning": 11.0, "critical": 10.5},
+        "input_voltage_levels": {"warning": 200.0, "critical": 180.0},
+        "output_voltage_levels": {"warning": 200.0, "critical": 180.0},
+        "frequency_levels": {"warning": 45.0, "critical": 40.0},
     },
     check_ruleset_name="remote_nut_ups",
 )
