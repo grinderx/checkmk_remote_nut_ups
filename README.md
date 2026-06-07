@@ -10,6 +10,8 @@ It supports:
 - Perfdata for graphing (battery, voltages, frequency, load, temperature)
 - Clean API2-compliant implementation
 
+Note: AI assisted.
+
 ---
 
 ## Components
