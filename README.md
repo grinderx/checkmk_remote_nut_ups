@@ -10,35 +10,43 @@ It supports:
 - One Checkmk service **per UPS**
 - Thresholds configurable via **WATO ruleset**
 - Perfdata for graphing (battery, voltages, frequency, load, temperature)
-- Clean API2-compliant implementation (no legacy WATO code)
+- Clean API2-compliant implementation
 
 ---
 
 ## Components
 
 ### 1. Agent Plugin  
-`local/share/check_mk/agents/plugins/remote_nut_ups`
+`/opt/omd/sites/site_name/local/share/check_mk/agents/plugins/remote_nut_ups`
 
 This script:
 
-- Reads a list of NUT hosts from `nut_hosts.cfg`
+- Reads a list of remote NUT hosts from `/opt/omd/sites/site_name/local/share/check_mk/agents/plugins/remote_nut_ups_hosts.cfg`
 - Discovers all UPS devices via `upsc -l`
 - Queries each UPS individually
 - Emits namespaced metrics in the form:
 
-<<<nut>>>
+```text
+<<<<remote_ups_host_01>>>>
+<<<remote_ups_nut>>>
 ups1 battery.charge 100
 ups1 input.voltage 230
 ups2 battery.charge 95
 ups2 input.voltage 228
-
+<<<<remote_ups_host_02>>>>
+<<<remote_ups_nut>>>
+ups1 battery.charge 100
+ups1 input.voltage 230
+ups2 battery.charge 95
+ups2 input.voltage 228
+```
 
 This enables **multi-instance parsing** on the Checkmk side.
 
 ---
 
 ### 2. Check Plugin  
-`local/lib/python3/cmk_addons/plugins/remote_nut_ups/agent_based/remote_nut_ups.py`
+`/opt/omd/sites/site_name/local/lib/python3/cmk_addons/plugins/remote_nut_ups/agent_based/remote_nut_ups.py`
 
 Implements:
 
@@ -60,7 +68,7 @@ Metrics include:
 ---
 
 ### 3. Ruleset  
-`local/lib/python3/cmk_addons/plugins/remote_nut_ups/rulesets/remote_nut_ups_parameters.py`
+`/opt/omd/sites/site_name/local/lib/python3/cmk_addons/plugins/remote_nut_ups/rulesets/remote_nut_ups_parameters.py`
 
 Defines configurable thresholds for:
 
@@ -70,26 +78,23 @@ Defines configurable thresholds for:
 - Output voltage
 - Input frequency
 
-The ruleset uses Checkmk **Rulesets API v2** (`cmk.rulesets.v1`) and provides
-tuple-style `(warn, crit)` parameters matching the check plugin.
-
 ---
 
 ## Installation
 
-Install by using the provided MKP package.
+Install by using the provided MKP package which you can find here:
 
 ## Usage
 
 After installation, Checkmk will automatically discover:
 
+```text
 UPS NUT ups1
 UPS NUT ups2
 UPS NUT ups3
+```
 
-Code
-
-Each UPS gets its own:
+per remote NUT host. Each UPS gets its own:
 
 - State evaluation
 - Thresholds
