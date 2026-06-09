@@ -86,7 +86,9 @@ Defines configurable thresholds for:
 
 ## Installation
 
-Install by using the provided MKP package which you can find here:
+Install by using the provided MKP package which you can find in the releases section of this repo or in Checkmk's exchange:
+
+https://exchange.checkmk.com/p/remote-nut-ups
 
 ## Usage
 
